@@ -152,3 +152,25 @@ fn signer_scale_roundtrip() {
 	let decoded = DilithiumSigner::decode(&mut &bytes[..]).expect("decode round-trips");
 	assert_eq!(signer, decoded);
 }
+
+// --- suite_tag invariants ----------------------------------------------------
+
+#[test]
+fn suite_tag_dilithium_is_zero() {
+	let tag: u8 = crate::suite_tag::DILITHIUM;
+	assert_eq!(
+		tag, 0x00,
+		"`suite_tag::DILITHIUM` must equal the SCALE discriminant of \
+		 `DilithiumSignatureScheme::Dilithium` so that on-chain bytes and \
+		 the off-chain suite identifier agree."
+	);
+}
+
+#[test]
+fn suite_tag_matches_signature_scheme_variant_byte() {
+	let pair = DilithiumPair::from_seed_slice(&SEED_ZERO).unwrap();
+	let sig = pair.sign(b"suite-tag-match");
+	let scheme = DilithiumSignatureScheme::Dilithium(sig);
+	let encoded = scheme.encode();
+	assert_eq!(encoded[0], crate::suite_tag::DILITHIUM);
+}

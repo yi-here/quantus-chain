@@ -3,6 +3,7 @@
 extern crate alloc;
 
 pub mod pair;
+pub mod suite_tag;
 pub mod traits;
 pub mod types;
 
