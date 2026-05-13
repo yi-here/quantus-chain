@@ -174,3 +174,24 @@ fn suite_tag_matches_signature_scheme_variant_byte() {
 	let encoded = scheme.encode();
 	assert_eq!(encoded[0], crate::suite_tag::DILITHIUM);
 }
+
+// --- forward-rename aliases --------------------------------------------------
+
+#[test]
+fn quantus_signature_alias_matches_dilithium_signature_scheme() {
+	let pair = DilithiumPair::from_seed_slice(&SEED_ZERO).unwrap();
+	let sig = pair.sign(b"alias-check");
+	let scheme = DilithiumSignatureScheme::Dilithium(sig);
+	let via_alias: crate::QuantusSignature = scheme.clone();
+	assert_eq!(scheme.encode(), via_alias.encode());
+	assert_eq!(scheme, via_alias);
+}
+
+#[test]
+fn quantus_signer_alias_matches_dilithium_signer() {
+	let pubkey = DilithiumPair::from_seed_slice(&SEED_ZERO).unwrap().public();
+	let signer = DilithiumSigner::Dilithium(pubkey);
+	let via_alias: crate::QuantusSigner = signer.clone();
+	assert_eq!(signer.encode(), via_alias.encode());
+	assert_eq!(signer, via_alias);
+}

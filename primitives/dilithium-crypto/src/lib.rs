@@ -22,3 +22,14 @@ pub use types::{
 	DilithiumPair, DilithiumPublic, DilithiumSignature, DilithiumSignatureScheme,
 	DilithiumSignatureWithPublic, DilithiumSigner, WrappedPublicBytes, WrappedSignatureBytes,
 };
+
+/// Forward-rename alias for [`DilithiumSignatureScheme`].
+///
+/// The enum is structurally multi-suite (see `suite_tag` and the variant-index
+/// policy in `types.rs`), but the original name implies a single scheme. New
+/// code should prefer `QuantusSignature`; the original name is kept as the
+/// canonical type so that `TypeInfo` runtime metadata is unchanged.
+pub type QuantusSignature = DilithiumSignatureScheme;
+
+/// Forward-rename alias for [`DilithiumSigner`]. See [`QuantusSignature`].
+pub type QuantusSigner = DilithiumSigner;
