@@ -87,10 +87,23 @@ pub struct WrappedSignatureBytes<const N: usize, SubTag>(pub SignatureBytes<N, S
 pub type DilithiumPublic = WrappedPublicBytes<{ crate::PUB_KEY_BYTES }, DilithiumCryptoTag>;
 pub type DilithiumSignature = WrappedSignatureBytes<{ crate::SIGNATURE_BYTES }, DilithiumCryptoTag>;
 
-/// Dilithium signature scheme - drop-in replacement for MultiSignature
+/// Dilithium signature scheme - drop-in replacement for MultiSignature.
 ///
-/// Currently supports only Dilithium, but structured as an enum to allow
-/// for future signature schemes to be added easily.
+/// Structured as an enum to allow additional signature schemes to be added
+/// later without breaking SCALE compatibility.
+///
+/// # Variant-index policy
+///
+/// SCALE encodes enum variants by **declaration order**. The first byte of an
+/// encoded `DilithiumSignatureScheme` is the variant index. Therefore:
+///
+/// * `Dilithium` MUST remain at index 0. Reordering it would invalidate every
+///   previously-signed extrinsic in chain history.
+/// * New schemes MUST be appended at the end of the enum. Never insert in the
+///   middle.
+/// * The matching constant in [`crate::suite_tag`] MUST be updated in the same
+///   commit, and a regression test added in `tests.rs` asserting the new
+///   variant's leading byte.
 #[derive(
 	Eq,
 	PartialEq,
@@ -106,9 +119,11 @@ pub enum DilithiumSignatureScheme {
 	Dilithium(DilithiumSignatureWithPublic),
 }
 
-/// Dilithium signer - replacement for MultiSigner
+/// Dilithium signer - replacement for MultiSigner.
 ///
-/// Identifies the signer of a transaction using Dilithium public key
+/// Identifies the signer of a transaction. Same variant-index policy as
+/// [`DilithiumSignatureScheme`]: `Dilithium` is index 0; new schemes are
+/// appended at the end with a matching entry in [`crate::suite_tag`].
 #[derive(
 	Eq,
 	PartialEq,
