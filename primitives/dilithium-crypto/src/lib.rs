@@ -6,6 +6,9 @@ pub mod pair;
 pub mod traits;
 pub mod types;
 
+#[cfg(test)]
+mod tests;
+
 use qp_rusty_crystals_dilithium::ml_dsa_87;
 
 pub const PUB_KEY_BYTES: usize = ml_dsa_87::PUBLICKEYBYTES;
